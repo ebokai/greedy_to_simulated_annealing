@@ -47,14 +47,14 @@ void partition_write(pStats partition_stats){
 
 	// WRITE PARTITION TO FILE
 	
-	string fpath = "./partitions/" + partition_stats.fname + "_partition.dat";
+	string fpath = "../comms/" + partition_stats.fname + "_sa_communities.dat";
 	ofstream myfile(fpath);
 	map<int,int> partition = partition_stats.best_partition;
 
 	map<int, int>::iterator it;
 
 	for(it = partition.begin(); it != partition.end(); it++){
-		myfile << it->first << ";" << it->second << endl;
+		myfile << it->second << endl;
 	}
 
 	myfile.close();

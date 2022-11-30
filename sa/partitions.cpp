@@ -64,7 +64,7 @@ map<int, int> read_mcm_partition(string fname){
 
 	map<int, int> partition;
 
-	string fpath = "../comms/" + fname + "_mcm_comm.dat";
+	string fpath = "../comms/" + fname + "_mcm_communities.dat";
 	ifstream part_file(fpath);
 	string line;
 	int c;

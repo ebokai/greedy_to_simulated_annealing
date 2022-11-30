@@ -44,13 +44,13 @@ int main(int argc, char **argv){
 	partition_stats.gm_logE = logE;
 	partition_stats.best_partition = partition;
 	partition_stats.true_logE = evidence(true_partition, data, N);
-
-
-	cout << "TRUE LOG E: " << partition_stats.true_logE << endl;
-	cout << "GREEDY LOG E: " << partition_stats.gm_logE << endl;
+	
 	cout << "INITIAL PARTITION: ";
 	partition_print(partition);
 	cout << endl;
+	cout << "TRUE LOG E: " << partition_stats.true_logE << endl;
+	cout << "GREEDY LOG E (SAA) : " << partition_stats.gm_logE << endl;
+	
 
 	while (step < max_steps){
 
@@ -105,17 +105,20 @@ int main(int argc, char **argv){
 		step++;
 	}
 
-	partition_stats.voi = get_voi(true_partition, partition_stats.best_partition);
-	partition_stats.voi_mcm = get_voi(mcm_partition, partition_stats.best_partition);
+	partition_stats.voi_TG = get_voi(true_partition, mcm_partition);
+	partition_stats.voi_TS = get_voi(true_partition, partition_stats.best_partition);
+	partition_stats.voi_SG = get_voi(mcm_partition, partition_stats.best_partition);
 	cout << endl;
-	cout << "FINAL LOG E: " << partition_stats.best_logE << endl;
-	cout << "DELTA LOG E (TRUE)   : " << partition_stats.best_logE - partition_stats.true_logE << endl;
-	cout << "DELTA LOG E (GREEDY) : " << partition_stats.best_logE - partition_stats.gm_logE << endl;
-	cout << "VOI (TRUE)   : " << partition_stats.voi << endl;
-	cout << "VOI (GREEDY) : " << partition_stats.voi_mcm << endl;
+	cout << "FINAL LOG E               : " << partition_stats.best_logE << endl;
+	cout << "DELTA LOG E (GREEDY-TRUE) : " << partition_stats.gm_logE - partition_stats.true_logE << endl;
+	cout << "DELTA LOG E (SAA-TRUE)    : " << partition_stats.best_logE - partition_stats.true_logE << endl;
+	cout << "DELTA LOG E (SAA-GREEDY)  : " << partition_stats.best_logE - partition_stats.gm_logE << endl;
+	cout << "VOI (GREEDY/TRUE)         : " << partition_stats.voi_TG << endl;
+	cout << "VOI (SAA/TRUE)            : " << partition_stats.voi_TS << endl;
+	cout << "VOI (SAA/GREEDY)          : " << partition_stats.voi_SG << endl;
 
-	//partition_write(partition_stats);
-	//write_statistics(partition_stats);
+	partition_write(partition_stats);
+	write_statistics(partition_stats);
 
 
 

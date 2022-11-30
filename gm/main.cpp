@@ -310,7 +310,8 @@ int main(int argc, char **argv)
     const string input_name = argv[1];
     const string input_data_file = INPUT_directory + input_name + ".dat";
 
-    cout << "input data file: " << input_data_file << endl;
+    cout << "INPUT FILE: " << input_data_file << endl;
+    cout << endl;
     system(("mkdir -p " + OUTPUT_directory).c_str());
 
     unsigned int N = 0; // will contain the number of datapoints in the dataset
@@ -332,14 +333,13 @@ int main(int argc, char **argv)
     string fname = OUTPUT_directory + input_name + "_mcm_results.dat";
     output_file.open(fname);
 
-    cout << "#########  GREEDY   #########" << endl;
     // Log evidence of MCM
     double LE_g = LogE_MCM(Kset, fp1, N);
     Print_Partition(fp1, input_name);
 
-    cout << "Elapsed time      : " << elapsed.count() << "s" << endl;
-    cout << "Log-evidence      : " << LE_g << endl;
-    cout << "Average comm size : " << (double)n / (double)fp1.size() << endl << endl;
+
+    cout << "GREEDY LOG E (C++)  : " << LE_g << endl;
+
 
     output_file << "LOGE_mcm;" << LE_g << "\n";
     output_file.close();

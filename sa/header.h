@@ -21,8 +21,9 @@ struct pStats{
 	double best_logE;
 	double true_logE;
 	double gm_logE;
-	double voi;
-	double voi_mcm;
+	double voi_TG;
+	double voi_TS;
+	double voi_SG;
 	map<int, int> best_partition;
 }; 
 

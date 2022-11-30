@@ -100,14 +100,15 @@ double get_voi(map<int,int> p1, map<int, int> p2){
 
 void write_statistics(pStats partition_stats){
 
-	string fpath = "./statistics/" + partition_stats.fname + "_stats.dat";
+	string fpath = "../stats/" + partition_stats.fname + "_stats.dat";
 	ofstream myfile(fpath);
 
-	myfile << "True log E | Best log E | Delta log E | VOI" << endl;
-	myfile << partition_stats.true_logE << ";";
-	myfile << partition_stats.best_logE << ";";
-	myfile << partition_stats.best_logE - partition_stats.true_logE << ";";
-	myfile << partition_stats.voi << endl;
+	myfile << "TRUE LOG E;" << partition_stats.true_logE << endl;
+	myfile << "GREEDY LOG E;" << partition_stats.gm_logE << endl;
+	myfile << "SAA LOG E;" << partition_stats.best_logE << endl;
+	myfile << "VOI TRUE-GREEDY;" << partition_stats.voi_TG << endl;
+	myfile << "VOI TRUE-SAA;" << partition_stats.voi_TS << endl;
+	myfile << "VOI SAA-GREEDY;" << partition_stats.voi_SG << endl;  
 
 	myfile.close();
 
