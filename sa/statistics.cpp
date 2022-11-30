@@ -10,16 +10,21 @@ double evidence(map<int,int> partition, map<uint32_t, int> data, int &N){
 	int np = max_comm(partition);
 	map<int, uint32_t> pbits;
 	map<int, int> rank;
-
+    
+    
+	uint32_t c = one;
 	for(int i = 0; i < n; i++){
-		pbits[partition[i]] += pow(2,i);
+
+		pbits[partition[i]] += c;
+		c = (c<<1);
+		//pbits[partition[i]] += pow(2,i);
 		rank[partition[i]] += 1;
 	}
 
 	for(int i = 0; i <= np; i++){
 		map<uint32_t, int> pdata = build_pdata(data, pbits[i]);
 		map<uint32_t, int>::iterator it; 
-		rank_pow = pow(2, rank[i] - 1);
+		rank_pow = (one << (rank[i] - 1)); // pow(2, rank[i] - 1);
 		pf = lgamma(rank_pow) - lgamma(N + rank_pow);
 		logE += pf;
 		for (it = pdata.begin(); it != pdata.end(); it ++){

@@ -13,6 +13,7 @@ using namespace std;
 // PARAMETERS =========================
 const int max_steps = 100000;
 const int n = 20;
+const uint32_t one = 1;
 // ====================================
 
 // STRUCTURES

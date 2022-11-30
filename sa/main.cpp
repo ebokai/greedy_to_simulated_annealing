@@ -11,6 +11,7 @@ int main(int argc, char **argv){
 
 	// declare variables
 	int N = 0;
+
 	map<int,int> partition;
 	map<int,int> new_partition;
 	map<int,int> true_partition;
@@ -51,7 +52,6 @@ int main(int argc, char **argv){
 	cout << "TRUE LOG E: " << partition_stats.true_logE << endl;
 	cout << "GREEDY LOG E (SAA) : " << partition_stats.gm_logE << endl;
 	
-
 	while (step < max_steps){
 
 		if (steps_since_improve > max_no_improve) {
