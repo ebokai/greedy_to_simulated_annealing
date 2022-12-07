@@ -16,10 +16,14 @@ int main(int argc, char **argv) {
     p_struct = get_data(fname, p_struct);
     //p_struct = random_partition();
     p_struct = load_partition(p_struct, fname);
+    p_struct.best_log_evidence = p_struct.current_log_evidence;
+	p_struct.best_partition = p_struct.current_partition;
 
     // SHOULD TEST IF INDEPENDENT INITIAL PARTITION DOESN'T GIVE ISSUES
 
     int f; // candidate function
+    bool first_reset = true;
+    bool no_improvement = true;
     double T0 = 100;
     unsigned int update_schedule = 100;
     unsigned int iterations = 0;
@@ -62,7 +66,8 @@ int main(int argc, char **argv) {
 		if ((p_struct.current_log_evidence > p_struct.best_log_evidence) && !(DoubleSame(p_struct.current_log_evidence, p_struct.best_log_evidence))){
 			p_struct.best_log_evidence = p_struct.current_log_evidence;
 			p_struct.best_partition = p_struct.current_partition;
-			cout << "best log-evidence: " << p_struct.current_log_evidence << "\t@T = " << p_struct.T << endl;
+			cout << "Best log-evidence: " << p_struct.current_log_evidence << "\t@T = " << p_struct.T << endl;
+			no_improvement = false;
 			steps_since_improve = 0;
 		} else {
 			steps_since_improve++;
@@ -70,7 +75,13 @@ int main(int argc, char **argv) {
 
 		if (steps_since_improve > max_no_improve){
 			cout << "Maximum number of steps without improvement in log-evidence." << endl;
-			break;
+			if ((first_reset) && (no_improvement)){
+				p_struct = random_partition(p_struct);
+				steps_since_improve = 0;
+				first_reset = false;
+			} else {
+				break;
+			}
 		}
 
     }
