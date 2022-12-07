@@ -1,127 +1,77 @@
 #include "header.h"
 #include <time.h>
+#include <ctime> 
+#include <ratio>
+#include <chrono>
 
-int main(int argc, char **argv){
+int main(int argc, char **argv) {
 
-	// initialize random seed
-	srand(time(NULL));
+	random_device randDevice;
+    srand(randDevice());
 
-	// parse filename
-	string fname = argv[1];
+    string fname = argv[1];
 
-	// declare variables
-	int N = 0;
+    Partition p_struct;
 
-	map<int,int> partition;
-	map<int,int> new_partition;
-	map<int,int> true_partition;
-	map<int,int> mcm_partition;
-	
+    p_struct = get_data(fname, p_struct);
+    //p_struct = random_partition();
+    p_struct = load_partition(p_struct, fname);
 
-	pStats partition_stats;
-	partition_stats.fname = fname;
+    // SHOULD TEST IF INDEPENDENT INITIAL PARTITION DOESN'T GIVE ISSUES
 
-	double logE, new_logE, delta_logE;
-	double p, u;
-	int step = 0;
-	int steps_since_improve = 0;
-	int max_no_improve = 10000;
 
-	float T0 = 100;
-	float T = T0;
-	int update_schedule = 100;
+    double T0 = 100;
+    unsigned int update_schedule = 100;
+    unsigned int iterations = 0;
+    unsigned int steps_since_improve = 0;
+	unsigned int max_no_improve = 10000;
 
-	// read dataset
-	map<uint32_t, int> data = get_data(N, fname);
+    p_struct.T = T0;
 
-	// initialize partitions
-	true_partition = fixed_partition(4);
-	//partition = random_partition();
-	mcm_partition = read_mcm_partition(fname);
-	partition = mcm_partition;
+    auto start = chrono::system_clock::now();
 
-	logE = evidence(partition, data, N);
-	partition_stats.best_logE = logE;
-	partition_stats.gm_logE = logE;
-	partition_stats.best_partition = partition;
-	partition_stats.true_logE = evidence(true_partition, data, N);
-	
-	cout << "INITIAL PARTITION: ";
-	partition_print(partition);
-	cout << endl;
-	cout << "TRUE LOG E: " << partition_stats.true_logE << endl;
-	cout << "GREEDY LOG E (SAA) : " << partition_stats.gm_logE << endl;
-	
-	while (step < max_steps){
+    for (int i = 0; i < 50000; i++){
 
-		if (steps_since_improve > max_no_improve) {
-			cout << "No improvement in log-evidence for " << max_no_improve << " iterations. Stopping." << endl;
-			break;
-		}
+    	iterations++;
 
-		// pick random candidate function ---------------------------
-		int f = rand()/(RAND_MAX/3);
+    	int f = rand()/(RAND_MAX/3);
+
 		switch(f){
-		case 0:
-			new_partition = merge_partition(partition);
+		case 0: 
+			p_struct = merge_partition(p_struct);
 			break;
 		case 1:
-			new_partition = split_partition(partition);
+			p_struct = split_partition(p_struct);
 			break;
 		case 2:
-			new_partition = switch_partition(partition);
+			p_struct = switch_partition(p_struct);
 			break;
 		}
 
-		// evaluate new partition -----------------------------------
-		new_logE = evidence(new_partition, data, N);
-		delta_logE = new_logE - logE;
+		if (i % update_schedule == 0){
+			p_struct.T = T0 / (1 + log(1 + i));
+		}
 
-		// keep track of current best solution ----------------------
-		if (new_logE > partition_stats.best_logE){
-			partition_stats.best_logE = new_logE;
-			partition_stats.best_partition = new_partition;
-			cout << step << " " << T << " " << partition_stats.best_logE << " ";
-			partition_print(new_partition);
+		if ((p_struct.current_log_evidence > p_struct.best_log_evidence) && !(DoubleSame(p_struct.current_log_evidence, p_struct.best_log_evidence))){
+			p_struct.best_log_evidence = p_struct.current_log_evidence;
+			cout << "best log-evidence: " << p_struct.current_log_evidence << "\t@T = " << p_struct.T << endl;
 			steps_since_improve = 0;
 		} else {
 			steps_since_improve++;
 		}
 
-		// metropolis step ------------------------------------------
-		p = exp(delta_logE/T);
-		u = static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
-
-		if (p > u){
-			partition = new_partition;
-			logE = new_logE;
+		if (steps_since_improve > max_no_improve){
+			break;
 		}
 
-		// cooling schedule -----------------------------------------
-		if (step % update_schedule == 0){
-			T = T0 / (1 + log(1 + step));
-		}
+    }
 
-		step++;
-	}
+    auto end = chrono::system_clock::now();
+	chrono::duration<double> elapsed = end - start;
+	cout << "Iterations per second: " << static_cast <double> (iterations) / elapsed.count() << endl;
+    
 
-	partition_stats.voi_TG = get_voi(true_partition, mcm_partition);
-	partition_stats.voi_TS = get_voi(true_partition, partition_stats.best_partition);
-	partition_stats.voi_SG = get_voi(mcm_partition, partition_stats.best_partition);
-	cout << endl;
-	cout << "FINAL LOG E               : " << partition_stats.best_logE << endl;
-	cout << "DELTA LOG E (GREEDY-TRUE) : " << partition_stats.gm_logE - partition_stats.true_logE << endl;
-	cout << "DELTA LOG E (SAA-TRUE)    : " << partition_stats.best_logE - partition_stats.true_logE << endl;
-	cout << "DELTA LOG E (SAA-GREEDY)  : " << partition_stats.best_logE - partition_stats.gm_logE << endl;
-	cout << "VOI (GREEDY/TRUE)         : " << partition_stats.voi_TG << endl;
-	cout << "VOI (SAA/TRUE)            : " << partition_stats.voi_TS << endl;
-	cout << "VOI (SAA/GREEDY)          : " << partition_stats.voi_SG << endl;
-
-	partition_write(partition_stats);
-	write_statistics(partition_stats);
+    return 0;
 
 
-
-
-	return 0;
 }

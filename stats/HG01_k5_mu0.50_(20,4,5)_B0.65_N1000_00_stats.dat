@@ -1,6 +1,6 @@
-TRUE LOG E;-11215.5
-GREEDY LOG E;-11188.7
-SAA LOG E;-11111.8
-VOI TRUE-GREEDY;0.368657
-VOI TRUE-SAA;0.492379
-VOI SAA-GREEDY;0.454805
+log-evidence (true):-11215.5
+log-evidence (greedy):-11188.7
+log-evidence (saa):-11111.8
+voi (true/greedy):0.368657
+voi (true/saa):0.492379
+voi (greedy/saa):0.454805

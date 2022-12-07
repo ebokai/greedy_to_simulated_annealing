@@ -42,7 +42,7 @@ void Print_Partition(map<unsigned int, __int128_t> partition, string input_name)
             bits{ (hi << 64) | lo };
 
         cout << (*it).first << "\t " << bits << endl;
-        output_community << (*it).first << "\t " << bits << "\n";
+        output_community << bits << "\n";
     }
     cout << endl;
     output_community.close();

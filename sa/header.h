@@ -1,50 +1,45 @@
-#include <map>
 #include <iostream>
-#include <algorithm>
-#include <cmath>
+#include <vector>
 #include <bitset>
+#include <random>
+#include <map>
+#include <unordered_map>
 #include <string>
 #include <fstream>
-#include <vector>
-#include <cstdlib>
+
 
 using namespace std;
 
-// PARAMETERS =========================
-const int max_steps = 100000;
-const int n = 20;
-const uint32_t one = 1;
-// ====================================
+const int n = 20; 
+const uint64_t ONE = 1; // uint64_t representation of 1
+const double EPSILON = 1e-4; // minimum change in log-evidence
 
-// STRUCTURES
-struct pStats{
-	string fname;
-	double best_logE;
-	double true_logE;
-	double gm_logE;
-	double voi_TG;
-	double voi_TS;
-	double voi_SG;
-	map<int, int> best_partition;
-}; 
 
-// FUNCTION DEFS ======================
+struct Partition{
 
-void partition_print(map<int, int> partition);
-void partition_write(pStats partition_stats);
-void write_statistics(pStats partition_stats);
-int max_comm(map<int,int> partition);
+	double T; // annealing temperature
+	double current_log_evidence = 0;
+	double best_log_evidence = 0;
 
-map<uint32_t, int> get_data(int &N, string fname);
-map<uint32_t, int> build_pdata(map<uint32_t, int> data, uint32_t pbit);
+	unsigned int N = 0; // number of samples in dataset
+	unsigned int nc = 0; // number of communities
 
-map<int, int> random_partition();
-map<int, int> fixed_partition(int nc);
-map<int, int> read_mcm_partition(string fname);
-map<int, int> merge_partition(map<int,int> partition);
-map<int, int> split_partition(map<int,int> partition);
-map<int, int> switch_partition(map<int,int> partition);
+	uint64_t occupied_partitions = 0; // occupied communities (with at least one node)
+	uint64_t occupied_partitions_gt2_nodes = 0; // communities with at least two nodes (for split and switch)
 
-double evidence(map<int,int> partition, map<uint32_t, int> data, int &N);
-double get_voi(map<int,int> p1, map<int, int> p2);
-// ====================================
+	map<uint64_t, unsigned int> data;
+	vector<uint64_t> current_partition = vector<uint64_t>(n);
+	vector<double> partition_evidence = vector<double>(n);
+	unordered_map<uint64_t, double> calculated_log_evidence; // store previously calculated log-evidence (slower)
+	
+};
+
+bool DoubleSame(double a, double b);
+unsigned int randomBitIndex(uint64_t v);
+double icc_evidence(uint64_t community, Partition &p_struct);
+Partition get_data(string fname, Partition &p_struct);
+Partition random_partition(Partition &p_struct);
+Partition load_partition(Partition &p_struct, string fname);
+Partition merge_partition(Partition &p_struct);
+Partition split_partition(Partition &p_struct);
+Partition switch_partition(Partition &p_struct);

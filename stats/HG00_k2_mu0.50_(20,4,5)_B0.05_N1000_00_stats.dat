@@ -1,0 +1,6 @@
+log-evidence (true):-14072.2
+log-evidence (greedy):-13921.6
+log-evidence (saa):-13921.6
+voi (true/greedy):0.606657
+voi (true/saa):0.606657
+voi (greedy/saa):0
