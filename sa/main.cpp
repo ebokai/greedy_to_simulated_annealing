@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 
     // SHOULD TEST IF INDEPENDENT INITIAL PARTITION DOESN'T GIVE ISSUES
 
-
+    int f; // candidate function
     double T0 = 100;
     unsigned int update_schedule = 100;
     unsigned int iterations = 0;
@@ -34,7 +34,14 @@ int main(int argc, char **argv) {
 
     	iterations++;
 
-    	int f = rand()/(RAND_MAX/3);
+    	if (p_struct.nc == n){
+    		f = 0; // always merge if all independent communities
+    	} else if (p_struct.nc == 1){
+    		f = 1; // always split if one big community
+    	} else {
+    		f = rand()/(RAND_MAX/3);
+    	}
+    	
 
 		switch(f){
 		case 0: 
@@ -62,6 +69,7 @@ int main(int argc, char **argv) {
 		}
 
 		if (steps_since_improve > max_no_improve){
+			cout << "Maximum number of steps without improvement in log-evidence." << endl;
 			break;
 		}
 
