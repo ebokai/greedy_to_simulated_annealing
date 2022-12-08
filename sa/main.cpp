@@ -81,7 +81,8 @@ int main(int argc, char **argv) {
 
 		// RESET PARTITION TO RANDOM PARTITION 
 		// For partitions loaded from file, sometimes the algorithm is not able to find a path 
-		// to a more optimal partition. In that case, the algorithm is restarted from a random partition. 
+		// to a more optimal partition. In that case, the algorithm is restarted from a random partition.
+		// Note: this only happens if there have no improvements at all (no_improvement = true). 
 		// In many cases, this allows the algorithm to find a more optimal solution. This mostly happens
 		// if the loaded partition consists of all independent communities. 
 		if (steps_since_improve > max_no_improve){
